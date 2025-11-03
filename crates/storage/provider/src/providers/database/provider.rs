@@ -827,13 +827,33 @@ impl<TX: DbTx, N: NodeTypes> AccountExtReader for DatabaseProvider<TX, N> {
         &self,
         range: impl RangeBounds<BlockNumber>,
     ) -> ProviderResult<BTreeSet<Address>> {
-        self.tx
-            .cursor_read::<tables::AccountChangeSets>()?
-            .walk_range(range)?
-            .map(|entry| {
-                entry.map(|(_, account_before)| account_before.address).map_err(Into::into)
-            })
-            .collect()
+        let highest_static_block = self
+            .static_file_provider
+            .get_highest_static_file_block(StaticFileSegment::AccountChangeSets);
+
+        if let Some(_highest) = highest_static_block {
+            todo!()
+            // let mut changed_accounts = BTreeSet::default();
+            // let static_end = range.end.min(highest + 1);
+            // if range.start() < static_end {
+            //     for block in range.start..static_end {
+            //         let block_changesets = self.account_block_changeset(block)?;
+            //         for changeset in block_changesets {
+            //             changed_accounts.insert(changeset.address);
+            //         }
+            //     }
+            // }
+
+            // Ok(changed_accounts)
+        } else {
+            self.tx
+                .cursor_read::<tables::AccountChangeSets>()?
+                .walk_range(range)?
+                .map(|entry| {
+                    entry.map(|(_, account_before)| account_before.address).map_err(Into::into)
+                })
+                .collect()
+        }
     }
 
     fn basic_accounts(
