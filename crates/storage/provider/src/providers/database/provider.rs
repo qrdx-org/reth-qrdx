@@ -825,26 +825,31 @@ impl<TX: DbTx, N: NodeTypes> AccountReader for DatabaseProvider<TX, N> {
 impl<TX: DbTx, N: NodeTypes> AccountExtReader for DatabaseProvider<TX, N> {
     fn changed_accounts_with_range(
         &self,
-        range: impl RangeBounds<BlockNumber>,
+        range: RangeInclusive<BlockNumber>,
     ) -> ProviderResult<BTreeSet<Address>> {
         let highest_static_block = self
             .static_file_provider
             .get_highest_static_file_block(StaticFileSegment::AccountChangeSets);
 
-        if let Some(_highest) = highest_static_block {
-            todo!()
-            // let mut changed_accounts = BTreeSet::default();
-            // let static_end = range.end.min(highest + 1);
-            // if range.start() < static_end {
-            //     for block in range.start..static_end {
-            //         let block_changesets = self.account_block_changeset(block)?;
-            //         for changeset in block_changesets {
-            //             changed_accounts.insert(changeset.address);
-            //         }
-            //     }
-            // }
+        tracing::trace!(target: "provider::static_file", ?range, ?highest_static_block, "Getting changed accounts with range");
 
-            // Ok(changed_accounts)
+        if let Some(highest) = highest_static_block {
+            let start = *range.start();
+            let static_end = (*range.end()).min(highest + 1);
+
+            let mut changed_accounts = BTreeSet::default();
+            if start <= static_end {
+                for block in start..=static_end {
+                    let block_changesets = self.account_block_changeset(block)?;
+                    tracing::trace!(target: "provider::static_file", ?block, ?block_changesets, ?highest, "Got some changesets");
+                    for changeset in block_changesets {
+                        changed_accounts.insert(changeset.address);
+                    }
+                }
+            }
+
+            tracing::trace!(target: "provider::static_file", ?range, ?highest_static_block, ?changed_accounts, "Got changed accounts with range");
+            Ok(changed_accounts)
         } else {
             self.tx
                 .cursor_read::<tables::AccountChangeSets>()?
@@ -871,18 +876,44 @@ impl<TX: DbTx, N: NodeTypes> AccountExtReader for DatabaseProvider<TX, N> {
         &self,
         range: RangeInclusive<BlockNumber>,
     ) -> ProviderResult<BTreeMap<Address, Vec<u64>>> {
-        let mut changeset_cursor = self.tx.cursor_read::<tables::AccountChangeSets>()?;
+        tracing::trace!(target: "provider::static_file", ?range, "Getting changesets for range");
+        let highest_static_block = self
+            .static_file_provider
+            .get_highest_static_file_block(StaticFileSegment::AccountChangeSets);
 
-        let account_transitions = changeset_cursor.walk_range(range)?.try_fold(
-            BTreeMap::new(),
-            |mut accounts: BTreeMap<Address, Vec<u64>>, entry| -> ProviderResult<_> {
-                let (index, account) = entry?;
-                accounts.entry(account.address).or_default().push(index);
-                Ok(accounts)
-            },
-        )?;
+        if let Some(highest) = highest_static_block {
+            let start = *range.start();
+            let static_end = (*range.end()).min(highest + 1);
 
-        Ok(account_transitions)
+            let mut changed_accounts_and_blocks: BTreeMap<_, Vec<u64>> = BTreeMap::default();
+            if start <= static_end {
+                for block in start..=static_end {
+                    let block_changesets = self.account_block_changeset(block)?;
+                    for changeset in block_changesets {
+                        changed_accounts_and_blocks
+                            .entry(changeset.address)
+                            .or_default()
+                            .push(block);
+                    }
+                }
+            }
+
+            tracing::trace!(target: "provider::static_file", ?range, ?changed_accounts_and_blocks, "Got changesets for range");
+            Ok(changed_accounts_and_blocks)
+        } else {
+            let mut changeset_cursor = self.tx.cursor_read::<tables::AccountChangeSets>()?;
+
+            let account_transitions = changeset_cursor.walk_range(range)?.try_fold(
+                BTreeMap::new(),
+                |mut accounts: BTreeMap<Address, Vec<u64>>, entry| -> ProviderResult<_> {
+                    let (index, account) = entry?;
+                    accounts.entry(account.address).or_default().push(index);
+                    Ok(accounts)
+                },
+            )?;
+
+            Ok(account_transitions)
+        }
     }
 }
 
@@ -911,6 +942,7 @@ impl<TX: DbTx, N: NodeTypes> ChangeSetReader for DatabaseProvider<TX, N> {
         if !static_changesets.is_empty() {
             return Ok(static_changesets);
         }
+
 
         // Fall back to database
         let range = block_number..=block_number;
