@@ -1,4 +1,7 @@
-use crate::{DatabaseHashedCursorFactory, DatabaseTrieCursorFactory, PrefixSetLoader};
+use crate::{
+    load_prefix_sets_with_provider, DatabaseHashedCursorFactory, DatabaseTrieCursorFactory,
+    PrefixSetLoader,
+};
 use alloy_primitives::{
     map::{AddressMap, B256Map},
     BlockNumber, B256, U256,
@@ -35,6 +38,7 @@ pub trait DatabaseStateRoot<'a, TX>: Sized {
     ///
     /// An instance of state root calculator with account and storage prefixes loaded.
     fn incremental_root_calculator(
+        provider: impl ChangeSetReader,
         tx: &'a TX,
         range: RangeInclusive<BlockNumber>,
     ) -> Result<Self, StateRootError>;
@@ -46,6 +50,7 @@ pub trait DatabaseStateRoot<'a, TX>: Sized {
     ///
     /// The updated state root.
     fn incremental_root(
+        provider: impl ChangeSetReader,
         tx: &'a TX,
         range: RangeInclusive<BlockNumber>,
     ) -> Result<B256, StateRootError>;
@@ -59,6 +64,7 @@ pub trait DatabaseStateRoot<'a, TX>: Sized {
     ///
     /// The updated state root and the trie updates.
     fn incremental_root_with_updates(
+        provider: impl ChangeSetReader,
         tx: &'a TX,
         range: RangeInclusive<BlockNumber>,
     ) -> Result<(B256, TrieUpdates), StateRootError>;
@@ -70,6 +76,7 @@ pub trait DatabaseStateRoot<'a, TX>: Sized {
     ///
     /// The intermediate progress of state root computation.
     fn incremental_root_with_progress(
+        provider: impl ChangeSetReader,
         tx: &'a TX,
         range: RangeInclusive<BlockNumber>,
     ) -> Result<StateRootProgress, StateRootError>;
@@ -147,35 +154,41 @@ impl<'a, TX: DbTx> DatabaseStateRoot<'a, TX>
     }
 
     fn incremental_root_calculator(
+        provider: impl ChangeSetReader,
         tx: &'a TX,
         range: RangeInclusive<BlockNumber>,
     ) -> Result<Self, StateRootError> {
-        let loaded_prefix_sets = PrefixSetLoader::<_, KeccakKeyHasher>::new(tx).load(range)?;
+        let loaded_prefix_sets =
+            load_prefix_sets_with_provider::<_, KeccakKeyHasher>(&provider, tx, range)?;
+        // let loaded_prefix_sets = PrefixSetLoader::<_, KeccakKeyHasher>::new(tx).load(range)?;
         Ok(Self::from_tx(tx).with_prefix_sets(loaded_prefix_sets))
     }
 
     fn incremental_root(
+        provider: impl ChangeSetReader,
         tx: &'a TX,
         range: RangeInclusive<BlockNumber>,
     ) -> Result<B256, StateRootError> {
         debug!(target: "trie::loader", ?range, "incremental state root");
-        Self::incremental_root_calculator(tx, range)?.root()
+        Self::incremental_root_calculator(provider, tx, range)?.root()
     }
 
     fn incremental_root_with_updates(
+        provider: impl ChangeSetReader,
         tx: &'a TX,
         range: RangeInclusive<BlockNumber>,
     ) -> Result<(B256, TrieUpdates), StateRootError> {
         debug!(target: "trie::loader", ?range, "incremental state root");
-        Self::incremental_root_calculator(tx, range)?.root_with_updates()
+        Self::incremental_root_calculator(provider, tx, range)?.root_with_updates()
     }
 
     fn incremental_root_with_progress(
+        provider: impl ChangeSetReader,
         tx: &'a TX,
         range: RangeInclusive<BlockNumber>,
     ) -> Result<StateRootProgress, StateRootError> {
         debug!(target: "trie::loader", ?range, "incremental state root with progress");
-        Self::incremental_root_calculator(tx, range)?.root_with_progress()
+        Self::incremental_root_calculator(provider, tx, range)?.root_with_progress()
     }
 
     fn overlay_root(tx: &'a TX, post_state: HashedPostState) -> Result<B256, StateRootError> {
