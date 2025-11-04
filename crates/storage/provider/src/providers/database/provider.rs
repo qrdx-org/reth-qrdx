@@ -943,7 +943,6 @@ impl<TX: DbTx, N: NodeTypes> ChangeSetReader for DatabaseProvider<TX, N> {
             return Ok(static_changesets);
         }
 
-
         // Fall back to database
         let range = block_number..=block_number;
         self.tx
@@ -2079,7 +2078,6 @@ impl<TX: DbTxMut + DbTx + 'static, N: NodeTypesForProvider> StateWriter
         let storage_range = BlockNumberAddress::range(range.clone());
 
         let storage_changeset = self.take::<tables::StorageChangeSets>(storage_range)?;
-        let account_changeset = self.take::<tables::AccountChangeSets>(range)?;
 
         // This is not working for blocks that are not at tip. as plain state is not the last
         // state of end range. We should rename the functions or add support to access
@@ -2087,6 +2085,26 @@ impl<TX: DbTxMut + DbTx + 'static, N: NodeTypesForProvider> StateWriter
         // anything.
         let mut plain_accounts_cursor = self.tx.cursor_write::<tables::PlainAccountState>()?;
         let mut plain_storage_cursor = self.tx.cursor_dup_write::<tables::PlainStorageState>()?;
+
+        // if there are static files for this segment, prune them.
+        // TODO: use the metadata table to check for this
+        let highest_changeset_block = self
+            .static_file_provider
+            .get_highest_static_file_block(StaticFileSegment::AccountChangeSets);
+        let account_changeset = if let Some(highest_block) = highest_changeset_block {
+            // TODO: add a `take` method that removes and returns the items instead of doing this
+            let changesets = self.account_changesets_range(block + 1..highest_block + 1)?;
+            let mut changeset_writer =
+                self.static_file_provider.latest_writer(StaticFileSegment::AccountChangeSets)?;
+            changeset_writer.prune_account_changesets(block)?;
+            tracing::trace!(target: "provider::static_file", ?changesets, ?block, ?range, ?highest_block, "Removing and returning changesets for unwind");
+
+            changesets
+        } else {
+            // Have to remove from static files if they exist, otherwise remove using `take` for the
+            // changeset tables
+            self.take::<tables::AccountChangeSets>(range)?
+        };
 
         // populate bundle state and reverts from changesets / state cursors, to iterate over,
         // remove, and return later
