@@ -1,0 +1,48 @@
+[package]
+name = "reth-qrdx-evm"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+homepage.workspace = true
+repository.workspace = true
+description = "QRDX EVM implementation"
+
+[lints]
+workspace = true
+
+[dependencies]
+# reth
+reth-evm.workspace = true
+reth-evm-ethereum.workspace = true
+reth-chainspec.workspace = true
+reth-ethereum-forks.workspace = true
+reth-primitives-traits.workspace = true
+reth-execution-types.workspace = true
+
+# qrdx
+reth-qrdx-chainspec.workspace = true
+reth-qrdx-forks.workspace = true
+
+# ethereum
+alloy-primitives.workspace = true
+alloy-consensus.workspace = true
+
+# revm
+revm-primitives.workspace = true
+
+[dev-dependencies]
+reth-revm.workspace = true
+
+[features]
+default = ["std"]
+std = [
+    "alloy-primitives/std",
+    "reth-chainspec/std",
+    "reth-evm-ethereum/std",
+    "reth-evm/std",
+    "reth-primitives-traits/std",
+    "reth-qrdx-chainspec/std",
+    "reth-qrdx-forks/std",
+    "reth-execution-types/std",
+]

@@ -1,0 +1,67 @@
+[package]
+name = "reth-qrdx-chainspec"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+homepage.workspace = true
+repository.workspace = true
+description = "EVM chain spec implementation for QRDX."
+
+[lints]
+workspace = true
+
+[dependencies]
+# reth
+reth-chainspec.workspace = true
+reth-ethereum-forks.workspace = true
+reth-primitives-traits.workspace = true
+reth-network-peers.workspace = true
+
+# qrdx
+reth-qrdx-forks.workspace = true
+
+# ethereum
+alloy-chains.workspace = true
+alloy-genesis.workspace = true
+alloy-primitives.workspace = true
+alloy-consensus.workspace = true
+alloy-eips.workspace = true
+alloy-hardforks.workspace = true
+
+serde = { workspace = true, optional = true }
+serde_json.workspace = true
+
+# misc
+derive_more.workspace = true
+
+[dev-dependencies]
+reth-chainspec = { workspace = true, features = ["test-utils"] }
+
+[features]
+default = ["std"]
+std = [
+    "alloy-chains/std",
+    "alloy-genesis/std",
+    "alloy-primitives/std",
+    "alloy-eips/std",
+    "reth-chainspec/std",
+    "reth-ethereum-forks/std",
+    "reth-primitives-traits/std",
+    "reth-qrdx-forks/std",
+    "alloy-consensus/std",
+    "derive_more/std",
+    "reth-network-peers/std",
+    "serde_json/std",
+    "serde?/std",
+]
+serde = [
+    "alloy-chains/serde",
+    "alloy-consensus/serde",
+    "alloy-eips/serde",
+    "alloy-hardforks/serde",
+    "alloy-primitives/serde",
+    "reth-ethereum-forks/serde",
+    "reth-qrdx-forks/serde",
+    "reth-primitives-traits/serde",
+]

@@ -86,6 +86,14 @@ members = [
     "crates/optimism/rpc/",
     "crates/optimism/storage",
     "crates/optimism/txpool/",
+    "crates/qrdx/bin",
+    "crates/qrdx/chainspec",
+    "crates/qrdx/cli",
+    "crates/qrdx/consensus",
+    "crates/qrdx/evm/",
+    "crates/qrdx/hardforks/",
+    "crates/qrdx/node/",
+    "crates/qrdx/primitives/",
     "crates/payload/basic/",
     "crates/payload/builder/",
     "crates/payload/builder-primitives/",
@@ -418,6 +426,14 @@ reth-optimism-primitives = { path = "crates/optimism/primitives", default-featur
 reth-optimism-rpc = { path = "crates/optimism/rpc" }
 reth-optimism-storage = { path = "crates/optimism/storage" }
 reth-optimism-txpool = { path = "crates/optimism/txpool" }
+reth-qrdx-chainspec = { path = "crates/qrdx/chainspec", default-features = false }
+reth-qrdx-cli = { path = "crates/qrdx/cli", default-features = false }
+reth-qrdx-consensus = { path = "crates/qrdx/consensus", default-features = false }
+reth-qrdx-evm = { path = "crates/qrdx/evm", default-features = false }
+reth-qrdx-forks = { path = "crates/qrdx/hardforks", default-features = false }
+reth-qrdx-node = { path = "crates/qrdx/node" }
+reth-qrdx-primitives = { path = "crates/qrdx/primitives", default-features = false }
+qrdx-reth = { path = "crates/qrdx/bin" }
 reth-payload-builder = { path = "crates/payload/builder" }
 reth-payload-builder-primitives = { path = "crates/payload/builder-primitives" }
 reth-payload-primitives = { path = "crates/payload/primitives" }
