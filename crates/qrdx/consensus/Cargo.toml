@@ -1,0 +1,37 @@
+[package]
+name = "reth-qrdx-consensus"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+homepage.workspace = true
+repository.workspace = true
+description = "QRDX consensus implementation"
+
+[lints]
+workspace = true
+
+[dependencies]
+# reth
+reth-consensus.workspace = true
+reth-primitives-traits.workspace = true
+reth-chainspec.workspace = true
+reth-ethereum-consensus.workspace = true
+
+# qrdx
+reth-qrdx-chainspec.workspace = true
+reth-qrdx-forks.workspace = true
+
+# ethereum
+alloy-primitives.workspace = true
+
+[features]
+default = ["std"]
+std = [
+    "alloy-primitives/std",
+    "reth-chainspec/std",
+    "reth-consensus/std",
+    "reth-primitives-traits/std",
+    "reth-qrdx-chainspec/std",
+    "reth-qrdx-forks/std",
+]

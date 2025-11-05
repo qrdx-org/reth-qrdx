@@ -1,0 +1,57 @@
+[package]
+name = "reth-qrdx-node"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+homepage.workspace = true
+repository.workspace = true
+description = "QRDX node implementation"
+
+[lints]
+workspace = true
+
+[dependencies]
+# reth
+reth-chainspec.workspace = true
+reth-node-api.workspace = true
+reth-node-builder.workspace = true
+reth-node-types.workspace = true
+reth-ethereum-payload-builder.workspace = true
+reth-ethereum-engine-primitives.workspace = true
+reth-network.workspace = true
+reth-evm.workspace = true
+reth-payload-builder.workspace = true
+reth-primitives-traits.workspace = true
+reth-provider.workspace = true
+reth-basic-payload-builder.workspace = true
+reth-execution-types.workspace = true
+reth-evm-ethereum.workspace = true
+
+# qrdx
+reth-qrdx-chainspec.workspace = true
+reth-qrdx-consensus.workspace = true
+reth-qrdx-evm.workspace = true
+reth-qrdx-forks.workspace = true
+
+# ethereum
+alloy-primitives.workspace = true
+
+# misc
+eyre.workspace = true
+
+[dev-dependencies]
+reth-cli-util.workspace = true
+reth-chainspec = { workspace = true, features = ["test-utils"] }
+
+[features]
+default = ["std"]
+std = [
+    "alloy-primitives/std",
+    "reth-chainspec/std",
+    "reth-primitives-traits/std",
+    "reth-qrdx-chainspec/std",
+    "reth-qrdx-consensus/std",
+    "reth-qrdx-evm/std",
+    "reth-qrdx-forks/std",
+]

@@ -1,0 +1,33 @@
+[package]
+name = "reth-qrdx-primitives"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+homepage.workspace = true
+repository.workspace = true
+description = "QRDX primitive types and traits"
+
+[lints]
+workspace = true
+
+[dependencies]
+# reth
+reth-primitives-traits.workspace = true
+reth-ethereum-forks.workspace = true
+
+# ethereum
+alloy-primitives.workspace = true
+
+[features]
+default = ["std"]
+std = [
+    "alloy-primitives/std",
+    "reth-primitives-traits/std",
+    "reth-ethereum-forks/std",
+]
+serde = [
+    "alloy-primitives/serde",
+    "reth-primitives-traits/serde",
+    "reth-ethereum-forks/serde",
+]

@@ -6867,6 +6867,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "qrdx-reth"
+version = "1.9.0"
+dependencies = [
+ "reth-cli-util",
+ "reth-qrdx-chainspec",
+ "reth-qrdx-cli",
+ "reth-qrdx-node",
+]
+
+[[package]]
 name = "quanta"
 version = "0.12.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -9926,6 +9936,120 @@ dependencies = [
  "strum 0.27.2",
  "thiserror 2.0.17",
  "toml",
+]
+
+[[package]]
+name = "reth-qrdx-chainspec"
+version = "1.9.0"
+dependencies = [
+ "alloy-chains",
+ "alloy-consensus",
+ "alloy-eips",
+ "alloy-genesis",
+ "alloy-hardforks",
+ "alloy-primitives",
+ "derive_more",
+ "reth-chainspec",
+ "reth-ethereum-forks",
+ "reth-network-peers",
+ "reth-primitives-traits",
+ "reth-qrdx-forks",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
+name = "reth-qrdx-cli"
+version = "1.9.0"
+dependencies = [
+ "clap",
+ "eyre",
+ "reth-chainspec",
+ "reth-cli",
+ "reth-cli-commands",
+ "reth-cli-runner",
+ "reth-cli-util",
+ "reth-node-builder",
+ "reth-node-core",
+ "reth-qrdx-chainspec",
+ "reth-qrdx-node",
+]
+
+[[package]]
+name = "reth-qrdx-consensus"
+version = "1.9.0"
+dependencies = [
+ "alloy-primitives",
+ "reth-chainspec",
+ "reth-consensus",
+ "reth-ethereum-consensus",
+ "reth-primitives-traits",
+ "reth-qrdx-chainspec",
+ "reth-qrdx-forks",
+]
+
+[[package]]
+name = "reth-qrdx-evm"
+version = "1.9.0"
+dependencies = [
+ "alloy-consensus",
+ "alloy-primitives",
+ "reth-chainspec",
+ "reth-ethereum-forks",
+ "reth-evm",
+ "reth-evm-ethereum",
+ "reth-execution-types",
+ "reth-primitives-traits",
+ "reth-qrdx-chainspec",
+ "reth-qrdx-forks",
+ "reth-revm",
+ "revm",
+ "revm-primitives",
+]
+
+[[package]]
+name = "reth-qrdx-forks"
+version = "1.9.0"
+dependencies = [
+ "alloy-primitives",
+ "once_cell",
+ "reth-ethereum-forks",
+]
+
+[[package]]
+name = "reth-qrdx-node"
+version = "1.9.0"
+dependencies = [
+ "alloy-primitives",
+ "eyre",
+ "reth-basic-payload-builder",
+ "reth-chainspec",
+ "reth-cli-util",
+ "reth-ethereum-engine-primitives",
+ "reth-ethereum-payload-builder",
+ "reth-evm",
+ "reth-evm-ethereum",
+ "reth-execution-types",
+ "reth-network",
+ "reth-node-api",
+ "reth-node-builder",
+ "reth-node-types",
+ "reth-payload-builder",
+ "reth-primitives-traits",
+ "reth-provider",
+ "reth-qrdx-chainspec",
+ "reth-qrdx-consensus",
+ "reth-qrdx-evm",
+ "reth-qrdx-forks",
+]
+
+[[package]]
+name = "reth-qrdx-primitives"
+version = "1.9.0"
+dependencies = [
+ "alloy-primitives",
+ "reth-ethereum-forks",
+ "reth-primitives-traits",
 ]
 
 [[package]]
