@@ -9,12 +9,9 @@
 #![cfg_attr(not(feature = "std"), no_std)]
 #![cfg_attr(not(test), warn(unused_crate_dependencies))]
 
-extern crate alloc;
-
-use reth_consensus::Consensus;
 use reth_qrdx_chainspec::QrdxChainSpec;
 
 /// QRDX consensus implementation.
 ///
 /// Uses standard Ethereum Beacon consensus rules with QRDX chain spec.
-pub type QrdxBeaconConsensus = reth_consensus::EthBeaconConsensus<QrdxChainSpec>;
+pub type QrdxBeaconConsensus = reth_ethereum_consensus::EthBeaconConsensus<QrdxChainSpec>;

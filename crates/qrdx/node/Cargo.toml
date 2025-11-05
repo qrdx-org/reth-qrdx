@@ -18,6 +18,7 @@ reth-node-api.workspace = true
 reth-node-builder.workspace = true
 reth-node-types.workspace = true
 reth-ethereum-payload-builder.workspace = true
+reth-ethereum-engine-primitives.workspace = true
 reth-network.workspace = true
 reth-evm.workspace = true
 reth-payload-builder.workspace = true
@@ -25,6 +26,7 @@ reth-primitives-traits.workspace = true
 reth-provider.workspace = true
 reth-basic-payload-builder.workspace = true
 reth-execution-types.workspace = true
+reth-evm-ethereum.workspace = true
 
 # qrdx
 reth-qrdx-chainspec.workspace = true
@@ -34,6 +36,9 @@ reth-qrdx-forks.workspace = true
 
 # ethereum
 alloy-primitives.workspace = true
+
+# misc
+eyre.workspace = true
 
 [dev-dependencies]
 reth-cli-util.workspace = true
