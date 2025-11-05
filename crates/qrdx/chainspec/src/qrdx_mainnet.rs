@@ -1,10 +1,10 @@
 //! Chain specification for the QRDX Mainnet network.
 
 use crate::{LazyLock, QrdxChainSpec};
-use alloc::{sync::Arc, vec};
+use alloc::sync::Arc;
 use alloy_chains::Chain;
-use alloy_primitives::{b256, U256};
-use reth_chainspec::{once_cell, BaseFeeParams, BaseFeeParamsKind, ChainSpec};
+use alloy_primitives::U256;
+use reth_chainspec::{BaseFeeParams, BaseFeeParamsKind, ChainSpec};
 use reth_qrdx_forks::QRDX_MAINNET_HARDFORKS;
 use reth_primitives_traits::SealedHeader;
 

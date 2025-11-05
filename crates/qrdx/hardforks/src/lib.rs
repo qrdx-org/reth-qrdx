@@ -17,7 +17,7 @@ extern crate alloc;
 use alloc::vec;
 use alloy_primitives::U256;
 use once_cell::sync::Lazy as LazyLock;
-use reth_ethereum_forks::{ChainHardforks, EthereumHardfork, ForkCondition};
+use reth_ethereum_forks::{ChainHardforks, EthereumHardfork, ForkCondition, Hardfork};
 
 /// Dev hardforks for QRDX
 pub static QRDX_DEV_HARDFORKS: LazyLock<ChainHardforks> = LazyLock::new(|| {

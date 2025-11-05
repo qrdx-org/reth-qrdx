@@ -65,9 +65,9 @@ where
     type ComponentsBuilder = ComponentsBuilder<
         Types,
         QrdxPoolBuilder,
-        QrdxPayloadBuilder<Types>,
+        QrdxPayloadBuilder,
         QrdxNetworkBuilder,
-        QrdxExecutorBuilder<Types>,
+        QrdxExecutorBuilder,
         QrdxConsensusBuilder,
         QrdxEngineValidatorBuilder,
     >;
@@ -104,11 +104,9 @@ where
 
 /// A basic QRDX payload service.
 #[derive(Debug, Default, Clone)]
-pub struct QrdxPayloadBuilder<Types> {
-    _marker: core::marker::PhantomData<Types>,
-}
+pub struct QrdxPayloadBuilder;
 
-impl<Types, Node, Pool> PayloadServiceBuilder<Node, Pool> for QrdxPayloadBuilder<Types>
+impl<Types, Node, Pool> PayloadServiceBuilder<Node, Pool> for QrdxPayloadBuilder
 where
     Types: NodeTypesWithDBAdapter<ChainSpec = QrdxChainSpec>,
     Node: FullNodeTypes<Types = Types>,
@@ -120,7 +118,7 @@ where
         pool: Pool,
     ) -> eyre::Result<PayloadBuilderHandle<<Node::Types as NodeTypesWithEngine>::Engine>> {
         let payload_builder = reth_ethereum_payload_builder::EthereumPayloadBuilder::new(
-            QrdxEvmConfig::new(ctx.chain_spec()),
+            reth_evm_ethereum::EthEvmConfig::new(ctx.chain_spec()),
         );
         let conf = ctx.payload_builder_config();
 
@@ -167,29 +165,21 @@ where
 
 /// A basic QRDX executor builder.
 #[derive(Debug, Default, Clone, Copy)]
-pub struct QrdxExecutorBuilder<Types> {
-    _marker: core::marker::PhantomData<Types>,
-}
+pub struct QrdxExecutorBuilder;
 
-impl<Types, Node> ExecutorBuilder<Node> for QrdxExecutorBuilder<Types>
+impl<Types, Node> ExecutorBuilder<Node> for QrdxExecutorBuilder
 where
     Types: NodeTypesWithDBAdapter<ChainSpec = QrdxChainSpec>,
     Node: FullNodeTypes<Types = Types>,
 {
     type EVM = QrdxEvmConfig;
-    type Executor = reth_ethereum_payload_builder::EthExecutionStrategyFactory<Arc<QrdxChainSpec>>;
 
     async fn build_evm(
         self,
         ctx: &BuilderContext<Node>,
-    ) -> eyre::Result<(Self::EVM, Self::Executor)> {
-        let evm_config = QrdxEvmConfig::new(ctx.chain_spec());
-        let executor = reth_ethereum_payload_builder::EthExecutionStrategyFactory::new(
-            ctx.chain_spec(),
-            evm_config.clone(),
-        );
-
-        Ok((evm_config, executor))
+    ) -> eyre::Result<Self::EVM> {
+        let evm_config = reth_evm_ethereum::EthEvmConfig::new(ctx.chain_spec());
+        Ok(evm_config)
     }
 }
 

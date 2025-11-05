@@ -22,9 +22,10 @@ pub use reth_qrdx_forks::*;
 
 use alloc::{boxed::Box, vec::Vec};
 use alloy_chains::Chain;
-use alloy_consensus::{BlockHeader, Header};
+use alloy_consensus::Header;
 use alloy_eips::eip7840::BlobParams;
 use alloy_genesis::Genesis;
+use alloy_hardforks::Hardfork;
 use alloy_primitives::{B256, U256};
 use derive_more::{Constructor, Deref, From, Into};
 use reth_chainspec::{
@@ -118,7 +119,7 @@ impl EthChainSpec for QrdxChainSpec {
     }
 
     fn display_hardforks(&self) -> Box<dyn core::fmt::Display> {
-        self.inner.display_hardforks()
+        Box::new(self.inner.display_hardforks())
     }
 
     fn genesis_header(&self) -> &Self::Header {
